@@ -1,0 +1,120 @@
+{
+  "manifest_version": "0.4",
+  "name": "japan-business-calendar-mcp",
+  "display_name": "Japan Business Day & Holiday Calculator MCP — 日本の営業日・祝日カレンダー",
+  "version": "0.1.0",
+  "description": "日本の営業日・祝日を判定するMCPサーバー。内閣府の国民の祝日・休日公式データ（1,067件・1955〜2027年）をシードキャッシュに同梱し、オフラインで決定論的に動作します。営業日/祝日判定、営業日カウント、直近営業日検索、祝日一覧、月別営業日一覧を提供。",
+  "long_description": "内閣府（CAO）が公開する国民の祝日・休日リスト（https://www8.cao.go.jp/chosei/shukujitsu/syukujitsu.csv）のスナップショットをMCPツールとして提供します。\n\n## 提供ツール\n\n| ツール | 内容 |\n|---|---|\n| `analyze_date` | 指定日の営業日/祝日/週末判定と、前後の営業日を返す |\n| `count_business_days` | 期間内の営業日数と非営業日数をカウント |\n| `next_business_day` | 指定日からn営業日前/後の日付を求める |\n| `list_holidays` | 全祝日一覧（年指定可） |\n| `list_business_days` | 指定月の営業日一覧 |\n| `data_summary` | データソース・ライセンス・カバー範囲のメタ情報 |\n\n## データ・単位\n\n- ソース: 内閣府 国民の祝日・休日（政府標準利用規約・出典明示で商用利用可）\n- カバー: 1955-01-01 〜 2027-11-23（1,067件）、同梱シードキャッシュ data/japan_holidays.json（約63KB）\n- 営業日ルール: 祝日でなく土曜・日曜ではない日\n- ライブ取得は行わず、決定論的・オフライン安全\n\n## 利用シナリオ\n\n- 営業日カレンダーによる予定調整\n- 日本市場のスケジューリング（株式市場・銀行・行政の休日対応）\n- AIエージェントによる business-day 計算\n- 営業日数 KPI の自動集計",
+  "author": {
+    "name": "atushi1841",
+    "url": "https://github.com/atushi1841"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/atushi1841/japan-business-calendar-mcp"
+  },
+  "homepage": "https://apify.com/fruitful_quintessence/japan-business-calendar-mcp",
+  "server": {
+    "type": "python",
+    "entry_point": "src/stdio_main.py",
+    "mcp_config": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--directory",
+        "${__dirname}",
+        "src/stdio_main.py"
+      ]
+    }
+  },
+  "compatibility": {
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "runtimes": {
+      "python": ">=3.10"
+    }
+  },
+  "tools": [
+    {
+      "name": "analyze_date",
+      "description": "Analyze one Japanese calendar date: is it a business day, a national holiday, or a weekend — and return the nearest business days.\n\nArgs:\n  date: YYYY-MM-DD (or YYYY/MM/DD). Empty = today (UTC).",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "date": {"default": "", "type": "string", "description": "YYYY-MM-DD; empty = today"}
+        },
+        "type": "object"
+      }
+    },
+    {
+      "name": "count_business_days",
+      "description": "Count business days (and non-business days) in an inclusive date range.\n\nArgs:\n  start: range start, YYYY-MM-DD.\n  end:   range end, YYYY-MM-DD.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "end": {"type": "string"},
+          "start": {"type": "string"}
+        },
+        "type": "object"
+      }
+    },
+    {
+      "name": "next_business_day",
+      "description": "Find the n-th business day after (n>0) or before (n<0) a date.\n\nArgs:\n  date: YYYY-MM-DD. Empty = today.\n  n:    steps; 1 = next business day, -1 = previous, 3 = 3rd next.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "date": {"default": "", "type": "string"},
+          "n": {"default": 1, "type": "integer"}
+        },
+        "type": "object"
+      }
+    },
+    {
+      "name": "list_holidays",
+      "description": "List national holidays. Args: year (0 = all years in the seed).",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "year": {"default": 0, "type": "integer"}
+        },
+        "type": "object"
+      }
+    },
+    {
+      "name": "list_business_days",
+      "description": "List all business days in a Japanese calendar month.\n\nArgs: year (e.g. 2026), month (1-12).",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "month": {"type": "integer"},
+          "year": {"type": "integer"}
+        },
+        "type": "object"
+      }
+    },
+    {
+      "name": "data_summary",
+      "description": "Metadata about the bundled holiday seed: source, license, coverage.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {},
+        "type": "object"
+      }
+    }
+  ],
+  "keywords": [
+    "japan",
+    "business day",
+    "holiday",
+    "calendar",
+    "営業日",
+    "祝日",
+    "schedule",
+    "japanese",
+    "cabinet office"
+  ]
+}
